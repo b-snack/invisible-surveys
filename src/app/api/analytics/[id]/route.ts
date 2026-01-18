@@ -14,7 +14,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   try {
     const events = db.prepare(`
       SELECT * FROM events WHERE session_id = ?
-    `).all(params.id) as EventRow[];
+    `).all(id) as EventRow[];
     
     const parsedEvents = events.map(event => ({
       ...event,

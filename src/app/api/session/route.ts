@@ -9,8 +9,8 @@ export async function POST(request: Request) {
   }
   
   try {
-    const stmt = db.prepare('INSERT INTO sessions (id, page_url) VALUES (?, ?)');
-    stmt.run(session_id, page_url);
+    const stmt = db.prepare('INSERT INTO sessions (id, started_at, page_url) VALUES (?, ?, ?)');
+    stmt.run(session_id, new Date().toISOString(), page_url);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create session' }, { status: 500 });

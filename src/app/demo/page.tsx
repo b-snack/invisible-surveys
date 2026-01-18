@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import { ShoppingCart, CreditCard } from 'lucide-react';
+import { ShoppingCart, CreditCard, Info } from 'lucide-react';
 
 export default function DemoPage() {
   const [cartCount, setCartCount] = useState(0);
@@ -18,8 +18,23 @@ export default function DemoPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-sm p-6 max-w-md w-full">
-        <h1 className="text-2xl font-light text-gray-800 mb-2">Premium Wireless Headphones</h1>
+      <div className="w-full max-w-4xl">
+        <div className="bg-white rounded-lg shadow-sm p-6 w-full">
+          {/* Educational section explaining data collection */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div className="flex">
+              <Info className="text-blue-500 mr-2" size={20} />
+              <div>
+                <h3 className="font-light text-gray-800 mb-1">Invisible Survey Tracker Demo</h3>
+                <p className="text-gray-600 text-sm">
+                  This page demonstrates how our tracker collects user behavior data, including mouse movements, 
+                  clicks, and scrolls. The data is collected anonymously and used to generate UX insights.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <h1 className="text-2xl font-light text-gray-800 mb-2">Premium Wireless Headphones</h1>
         
         <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-64 mb-4" />
         
@@ -57,6 +72,7 @@ export default function DemoPage() {
               </button>
             ))}
           </div>
+        </div>
         </div>
       </div>
       

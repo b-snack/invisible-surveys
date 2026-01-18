@@ -1,229 +1,98 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
-import { Activity, MousePointer2, Lightbulb } from 'lucide-react';
+import Link from 'next/link';
+import { MousePointer2, Activity, BarChart2, Lightbulb, LayoutDashboard, ShoppingCart } from 'lucide-react';
 
-export default function Dashboard() {
-  const [sessions, setSessions] = useState<any[]>([]);
-  const [selectedSession, setSelectedSession] = useState<any>(null);
-  const [events, setEvents] = useState<any[]>([]);
-  const [analysis, setAnalysis] = useState('');
-  const [loading, setLoading] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  
-  // Fetch sessions every 3 seconds
-  useEffect(() => {
-    const fetchSessions = async () => {
-      try {
-        const res = await fetch('/api/sessions');
-        const data = await res.json();
-        setSessions(data);
-      } catch (error) {
-        console.error('Failed to fetch sessions:', error);
-      }
-    };
-    
-    fetchSessions();
-    const interval = setInterval(fetchSessions, 3000);
-    return () => clearInterval(interval);
-  }, []);
-  
-  // Fetch events when session is selected
-  useEffect(() => {
-    if (!selectedSession) return;
-    
-    const fetchEvents = async () => {
-      try {
-        const res = await fetch(`/api/analytics/${selectedSession.id}`);
-        const data = await res.json();
-        setEvents(data);
-        setAnalysis('');
-        drawHeatmap(data);
-      } catch (error) {
-        console.error('Failed to fetch events:', error);
-      }
-    };
-    
-    fetchEvents();
-  }, [selectedSession]);
-  
-  // Draw heatmap on canvas
-  const drawHeatmap = (events: any[]) => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    // Clear canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    // Find max coordinates to scale
-    let maxX = 0, maxY = 0;
-    events.forEach(event => {
-      if (event.data) {
-        maxX = Math.max(maxX, event.data.x || 0);
-        maxY = Math.max(maxY, event.data.y || 0);
-      }
-    });
-    
-    // Scale factor
-    const scaleX = canvas.width / Math.max(maxX, 1);
-    const scaleY = canvas.height / Math.max(maxY, 1);
-    
-    // Draw mouse movements (blue dots)
-    events.filter(e => e.type === 'mousemove').forEach(event => {
-      if (event.data && event.data.x !== undefined && event.data.y !== undefined) {
-        ctx.fillStyle = 'rgba(0, 123, 255, 0.1)';
-        ctx.beginPath();
-        ctx.arc(event.data.x * scaleX, event.data.y * scaleY, 2, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-    });
-    
-    // Draw clicks (green circles)
-    events.filter(e => e.type === 'click').forEach(event => {
-      if (event.data && event.data.x !== undefined && event.data.y !== undefined) {
-        ctx.fillStyle = 'rgba(40, 167, 69, 0.3)';
-        ctx.beginPath();
-        ctx.arc(event.data.x * scaleX, event.data.y * scaleY, 8, 0, 2 * Math.PI);
-        ctx.fill();
-      }
-    });
-  };
-  
-  // Generate AI insights
-  const generateInsights = async () => {
-    if (!selectedSession) return;
-    
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/analyze/${selectedSession.id}`, {
-        method: 'POST'
-      });
-      const data = await res.json();
-      setAnalysis(data.analysis);
-    } catch (error) {
-      console.error('Failed to generate insights:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-  // Calculate metrics
-  const clickCount = events.filter(e => e.type === 'click').length;
-  const moveCount = events.filter(e => e.type === 'mousemove').length;
-  const scrollCount = events.filter(e => e.type === 'scroll').length;
-  
+export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-2xl font-light text-gray-800 mb-6">User Session Dashboard</h1>
-      
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Sessions List */}
-        <div className="bg-white rounded-lg shadow-sm p-4 lg:w-1/3">
-          <h2 className="font-light text-gray-800 mb-3 flex items-center">
-            <Activity className="mr-2" size={18} /> Sessions
-          </h2>
-          <div className="space-y-2 max-h-[60vh] overflow-y-auto">
-            {sessions.map(session => (
-              <div 
-                key={session.id}
-                className={`p-3 rounded-lg cursor-pointer ${
-                  selectedSession?.id === session.id 
-                    ? 'bg-blue-50 border border-blue-200' 
-                    : 'bg-gray-50 hover:bg-gray-100'
-                }`}
-                onClick={() => setSelectedSession(session)}
-              >
-                <div className="font-medium truncate">{session.page_url}</div>
-                <div className="text-sm text-gray-500">
-                  {new Date(session.started_at).toLocaleString()}
-                </div>
+    <div className="min-h-screen bg-gray-100">
+      {/* Hero Section */}
+      <div className="bg-white py-16">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <h1 className="text-4xl font-light text-gray-800 mb-4">Invisible Survey Tracker</h1>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Understand user behavior without surveys. AI-powered insights from cursor movements, clicks, and scrolls.
+          </p>
+          <div className="flex justify-center gap-4">
+            <Link href="/dashboard" className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg flex items-center">
+              <LayoutDashboard className="mr-2" size={18} />
+              View Dashboard
+            </Link>
+            <Link href="/demo" className="bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-3 rounded-lg flex items-center">
+              <ShoppingCart className="mr-2" size={18} />
+              Try Demo
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* How It Works */}
+      <div className="py-16">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-2xl font-light text-gray-800 mb-8 text-center">How It Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              { 
+                title: 'Track', 
+                description: 'Records mouse movements, clicks, and scrolls without user interruption',
+                icon: <MousePointer2 size={32} className="text-blue-500 mb-4" />
+              },
+              { 
+                title: 'Analyze', 
+                description: 'Visualizes user interaction patterns with heatmaps and position graphs',
+                icon: <BarChart2 size={32} className="text-blue-500 mb-4" />
+              },
+              { 
+                title: 'Improve', 
+                description: 'Generates AI-powered UX recommendations to optimize your site',
+                icon: <Lightbulb size={32} className="text-blue-500 mb-4" />
+              }
+            ].map((step, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-sm p-6 text-center">
+                {step.icon}
+                <h3 className="font-light text-xl text-gray-800 mb-2">{step.title}</h3>
+                <p className="text-gray-600">{step.description}</p>
               </div>
             ))}
           </div>
         </div>
-        
-        {/* Analytics */}
-        <div className="bg-white rounded-lg shadow-sm p-4 lg:w-2/3">
-          {selectedSession ? (
-            <>
-              <h2 className="font-light text-gray-800 mb-3">Session Analytics</h2>
-              
-              {/* Metrics Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <div className="bg-blue-50 rounded-lg p-4 flex items-center">
-                  <MousePointer2 className="text-blue-500 mr-3" size={24} />
-                  <div>
-                    <div className="text-gray-500">Mouse Moves</div>
-                    <div className="text-2xl font-normal">{moveCount}</div>
-                  </div>
-                </div>
-                
-                <div className="bg-green-50 rounded-lg p-4 flex items-center">
-                  <MousePointer2 className="text-green-500 mr-3" size={24} />
-                  <div>
-                    <div className="text-gray-500">Clicks</div>
-                    <div className="text-2xl font-normal">{clickCount}</div>
-                  </div>
-                </div>
-                
-                <div className="bg-purple-50 rounded-lg p-4 flex items-center">
-                  <MousePointer2 className="text-purple-500 mr-3" size={24} />
-                  <div>
-                    <div className="text-gray-500">Scrolls</div>
-                    <div className="text-2xl font-normal">{scrollCount}</div>
-                  </div>
-                </div>
+      </div>
+
+      {/* Demo Preview */}
+      <div className="py-16 bg-white">
+        <div className="max-w-4xl mx-auto px-4">
+          <h2 className="text-2xl font-light text-gray-800 mb-8 text-center">See It in Action</h2>
+          <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+            <div className="flex justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-3 h-3 bg-red-400 rounded-full mr-2"></div>
+                <div className="w-3 h-3 bg-yellow-400 rounded-full mr-2"></div>
+                <div className="w-3 h-3 bg-green-400 rounded-full"></div>
               </div>
-              
-              {/* Heatmap */}
-              <div className="mb-6">
-                <h3 className="font-light text-gray-800 mb-2">Interaction Heatmap</h3>
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <canvas 
-                    ref={canvasRef} 
-                    width={800} 
-                    height={400}
-                    className="w-full h-64 border border-gray-200 rounded"
-                  />
-                  <div className="flex justify-center mt-2 text-sm text-gray-500">
-                    <div className="flex items-center mr-4">
-                      <div className="w-3 h-3 bg-blue-400 rounded-full mr-1"></div>
-                      Mouse movements
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-green-400 rounded-full mr-1"></div>
-                      Clicks
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* AI Insights */}
-              <div>
-                <button
-                  onClick={generateInsights}
-                  disabled={loading}
-                  className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center mb-3"
-                >
-                  <Lightbulb className="mr-2" size={18} />
-                  {loading ? 'Generating...' : 'Generate AI Insights'}
-                </button>
-                
-                {analysis && (
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <h3 className="font-light text-gray-800 mb-2">UX Analysis</h3>
-                    <div className="text-gray-700 whitespace-pre-line">{analysis}</div>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="text-gray-500 text-center py-10">
-              Select a session to view analytics
+              <div className="text-gray-500 text-sm">invisible-surveys-demo.com</div>
             </div>
-          )}
+            <div className="bg-gray-800 p-4 rounded-md">
+              <div className="bg-gray-200 border-2 border-dashed rounded-xl w-full h-64" />
+            </div>
+            <div className="mt-6 text-center">
+              <Link href="/demo" className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
+                Try Interactive Demo
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Get Started */}
+      <div className="py-16">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <h2 className="text-2xl font-light text-gray-800 mb-4">Ready to Understand Your Users?</h2>
+          <p className="text-gray-600 mb-8">
+            Start gathering real insights without annoying surveys or interruptions.
+          </p>
+          <Link href="/dashboard" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 rounded-lg inline-flex items-center">
+            <Activity className="mr-2" size={18} />
+            Launch Dashboard
+          </Link>
         </div>
       </div>
     </div>

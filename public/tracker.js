@@ -21,15 +21,19 @@
     });
   }
   
-  // Throttled mousemove handler
-  let lastMove = 0;
-  function handleMouseMove(e) {
-    const now = Date.now();
-    if (now - lastMove > 100) {
-      trackEvent('mousemove', { x: e.clientX, y: e.clientY });
-      lastMove = now;
+  // Track cursor position every second
+  let lastPosition = null;
+  function trackCursorPosition() {
+    if (lastPosition) {
+      trackEvent('cursor_position', lastPosition);
     }
   }
+  setInterval(trackCursorPosition, 1000);
+  
+  // Update last known position
+  document.addEventListener('mousemove', (e) => {
+    lastPosition = { x: e.clientX, y: e.clientY };
+  });
   
   // Click handler
   function handleClick(e) {
@@ -51,7 +55,6 @@
   }
   
   // Set up event listeners
-  document.addEventListener('mousemove', handleMouseMove);
   document.addEventListener('click', handleClick);
   window.addEventListener('scroll', handleScroll);
   
