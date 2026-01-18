@@ -9,8 +9,8 @@ interface EventRow {
   data: string;
 }
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
-  const id = params.id;
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     const events = db.prepare(`
       SELECT * FROM events WHERE session_id = ?

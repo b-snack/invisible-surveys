@@ -13,8 +13,8 @@ interface EventRow {
 // Initialize Google Generative AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
-  const id = params.id;
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   try {
     // Retrieve session events
     const events = db.prepare(`

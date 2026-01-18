@@ -65,9 +65,13 @@ export default function Dashboard() {
     // Draw mouse movements (blue dots)
     events.filter(e => e.type === 'mousemove').forEach(event => {
       if (event.data && event.data.x !== undefined && event.data.y !== undefined) {
+        // Scale coordinates to canvas size
+        const scaledX = (event.data.x / containerWidth) * canvas.width;
+        const scaledY = (event.data.y / containerHeight) * canvas.height;
+        
         ctx.fillStyle = 'rgba(0, 123, 255, 0.1)';
         ctx.beginPath();
-        ctx.arc(event.data.x, event.data.y, 2, 0, 2 * Math.PI);
+        ctx.arc(scaledX, scaledY, 2, 0, 2 * Math.PI);
         ctx.fill();
       }
     });
@@ -75,9 +79,13 @@ export default function Dashboard() {
     // Draw clicks (green circles)
     events.filter(e => e.type === 'click').forEach(event => {
       if (event.data && event.data.x !== undefined && event.data.y !== undefined) {
+        // Scale coordinates to canvas size
+        const scaledX = (event.data.x / containerWidth) * canvas.width;
+        const scaledY = (event.data.y / containerHeight) * canvas.height;
+        
         ctx.fillStyle = 'rgba(40, 167, 69, 0.3)';
         ctx.beginPath();
-        ctx.arc(event.data.x, event.data.y, 8, 0, 2 * Math.PI);
+        ctx.arc(scaledX, scaledY, 8, 0, 2 * Math.PI);
         ctx.fill();
       }
     });
@@ -133,7 +141,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-light text-gray-800">User Session Dashboard</h1>
+        <h1 className="text-2xl font-light text-black">User Session Dashboard</h1>
         <div className="flex gap-2">
           <Link href="/" className="text-blue-500 hover:text-blue-700">Back to Home</Link>
           <button
@@ -149,7 +157,7 @@ export default function Dashboard() {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sessions List */}
         <div className="bg-white rounded-lg shadow-sm p-4 lg:w-1/3">
-          <h2 className="font-light text-gray-800 mb-3 flex items-center">
+          <h2 className="font-light text-black mb-3 flex items-center">
             <Activity className="mr-2" size={18} /> Sessions
           </h2>
           <div className="space-y-2 max-h-[60vh] overflow-y-auto">
@@ -164,7 +172,7 @@ export default function Dashboard() {
                 onClick={() => setSelectedSession(session)}
               >
                 <div className="font-medium truncate">{session.page_url}</div>
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-black">
                   {new Date(session.started_at).toLocaleString()}
                 </div>
               </div>
@@ -176,31 +184,31 @@ export default function Dashboard() {
         <div className="bg-white rounded-lg shadow-sm p-4 lg:w-2/3">
           {selectedSession ? (
             <>
-              <h2 className="font-light text-gray-800 mb-3">Session Analytics</h2>
+              <h2 className="font-light text-black mb-3">Session Analytics</h2>
               
               {/* Metrics Cards */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div className="bg-blue-50 rounded-lg p-4 flex items-center">
                   <MousePointer2 className="text-blue-500 mr-3" size={24} />
                   <div>
-                    <div className="text-gray-500">Mouse Moves</div>
-                    <div className="text-2xl font-normal">{moveCount}</div>
+              <div className="text-black">Mouse Moves</div>
+              <div className="text-2xl font-normal text-black">{moveCount}</div>
                   </div>
                 </div>
                 
                 <div className="bg-green-50 rounded-lg p-4 flex items-center">
                   <MousePointer2 className="text-green-500 mr-3" size={24} />
                   <div>
-                    <div className="text-gray-500">Clicks</div>
-                    <div className="text-2xl font-normal">{clickCount}</div>
+              <div className="text-black">Clicks</div>
+              <div className="text-2xl font-normal text-black">{clickCount}</div>
                   </div>
                 </div>
                 
                 <div className="bg-purple-50 rounded-lg p-4 flex items-center">
                   <MousePointer2 className="text-purple-500 mr-3" size={24} />
                   <div>
-                    <div className="text-gray-500">Scrolls</div>
-                    <div className="text-2xl font-normal">{scrollCount}</div>
+              <div className="text-black">Scrolls</div>
+              <div className="text-2xl font-normal text-black">{scrollCount}</div>
                   </div>
                 </div>
               </div>
@@ -208,7 +216,7 @@ export default function Dashboard() {
               {/* Heatmap */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div>
-                  <h3 className="font-light text-gray-800 mb-2">Interaction Heatmap</h3>
+                  <h3 className="font-light text-black mb-2">Interaction Heatmap</h3>
                   <div className="bg-gray-50 rounded-lg p-4">
                     <canvas 
                       ref={canvasRef} 
@@ -216,7 +224,7 @@ export default function Dashboard() {
                       height={400}
                       className="w-full h-64 border border-gray-200 rounded"
                     />
-                    <div className="flex justify-center mt-2 text-sm text-gray-500">
+                    <div className="flex justify-center mt-2 text-sm text-black">
                       <div className="flex items-center mr-4">
                         <div className="w-3 h-3 bg-blue-400 rounded-full mr-1"></div>
                         Mouse movements
@@ -230,31 +238,29 @@ export default function Dashboard() {
                 </div>
                 
                 <div>
-                  <h3 className="font-light text-gray-800 mb-2">Cursor Position Graph</h3>
+                  <h3 className="font-light text-black mb-2">Cursor Position Graph</h3>
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="relative h-64">
+                    <div className="relative h-64 border border-gray-200 rounded overflow-hidden">
                       {positionData.length > 0 ? (
-                        <div className="grid grid-cols-12 gap-0.5 h-full">
+                        <svg width="100%" height="100%" className="absolute inset-0">
                           {positionData.map((pos, index) => (
-                            <div 
+                            <circle
                               key={index}
-                              className="relative"
-                              style={{ gridColumn: `${Math.floor(pos.x / 70) + 1}`, gridRow: `${Math.floor(pos.y / 50) + 1}` }}
-                            >
-                              <div 
-                                className="absolute w-3 h-3 bg-purple-500 rounded-full transform -translate-x-1/2 -translate-y-1/2"
-                                style={{ left: `${pos.x}px`, top: `${pos.y}px` }}
-                              />
-                            </div>
+                              cx={Math.min(Math.max(pos.x / 2, 5), 395)}
+                              cy={Math.min(Math.max(pos.y / 2.5, 5), 251)}
+                              r="3"
+                              fill="#8b5cf6"
+                              opacity="0.7"
+                            />
                           ))}
-                        </div>
+                        </svg>
                       ) : (
-                        <div className="flex items-center justify-center h-full text-gray-400">
+                        <div className="flex items-center justify-center h-full text-black">
                           No cursor position data available
                         </div>
                       )}
                     </div>
-                    <div className="flex justify-center mt-2 text-sm text-gray-500">
+                    <div className="flex justify-center mt-2 text-sm text-black">
                       <div className="flex items-center">
                         <div className="w-3 h-3 bg-purple-500 rounded-full mr-1"></div>
                         Cursor positions (1s intervals)
@@ -277,14 +283,14 @@ export default function Dashboard() {
                 
                 {analysis && (
                   <div className="bg-blue-50 rounded-lg p-4">
-                    <h3 className="font-light text-gray-800 mb-2">UX Analysis</h3>
-                    <div className="text-gray-700 whitespace-pre-line">{analysis}</div>
+                    <h3 className="font-light text-black mb-2">UX Analysis</h3>
+                    <div className="text-black whitespace-pre-line">{analysis}</div>
                   </div>
                 )}
               </div>
             </>
           ) : (
-            <div className="text-gray-500 text-center py-10">
+            <div className="text-black text-center py-10">
               Select a session to view analytics
             </div>
           )}

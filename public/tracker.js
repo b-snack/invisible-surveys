@@ -21,19 +21,17 @@
     });
   }
   
-  // Track cursor position every second
-  let lastPosition = null;
-  function trackCursorPosition() {
-    if (lastPosition) {
-      trackEvent('cursor_position', lastPosition);
-    }
-  }
-  setInterval(trackCursorPosition, 1000);
-  
-  // Update last known position
+  // Track cursor position every 100ms
+  let lastTrackTime = 0;
   document.addEventListener('mousemove', (e) => {
-    lastPosition = { x: e.clientX, y: e.clientY };
+    const now = Date.now();
+    if (now - lastTrackTime >= 100) {
+      trackEvent('mousemove', { x: e.clientX, y: e.clientY });
+      lastTrackTime = now;
+    }
   });
+  
+  // Remove the duplicate mousemove listener
   
   // Click handler
   function handleClick(e) {

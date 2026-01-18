@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #000000;
 }
 
 @theme inline {
@@ -14,8 +14,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ffffff;
+    --foreground: #000000;
   }
 }
 
@@ -23,4 +23,49 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Force ALL text to be black - EVERYTHING */
+*, *::before, *::after,
+h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, label, li, td, th, dt, dd {
+  color: #000000 !important;
+}
+
+/* Only preserve button text colors and specific UI elements */
+.text-white,
+button.bg-purple-500,
+button.bg-purple-500 *,
+button.bg-blue-500,
+button.bg-blue-500 *,
+button.bg-orange-400,
+button.bg-orange-400 *,
+button.bg-yellow-400,
+button.bg-yellow-400 * {
+  color: #ffffff !important;
+}
+
+/* Preserve link colors */
+a.text-blue-500,
+a.text-blue-600,
+a.text-blue-700,
+a.text-blue-800,
+.text-blue-600,
+.text-blue-700,
+.text-blue-800 {
+  color: #2563eb !important;
+}
+
+/* Preserve star ratings only */
+.text-orange-400 {
+  color: #fb923c !important;
+}
+
+/* Preserve price/deal colors only */
+.text-red-600 {
+  color: #dc2626 !important;
+}
+
+/* Preserve status colors only */
+.text-green-700 {
+  color: #15803d !important;
 }
